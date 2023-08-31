@@ -1,2 +1,1 @@
-# ECEN_424
-ECEN_424 MPs
+# ECEN_424 MPs
