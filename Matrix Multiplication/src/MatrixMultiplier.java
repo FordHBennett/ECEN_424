@@ -2,65 +2,56 @@ import java.util.Arrays;
 import java.util.Random;
 
 public class MatrixMultiplier {
-    //Initialize the matrix size and the max random value
+    // Initialize the matrix size and the maximum random value constants
     static final int MATRIX_SIZE = 20;
     static final int MAX_RANDOM_VALUE = 10;
     static final int NUM_THREADS = 5;
 
-    //Initialize the matrices
+    // Initialize the matrices and the result matrix
     static int[][] matrixProd = new int[MATRIX_SIZE][MATRIX_SIZE];
     static int[][] matrix1 = new int[MATRIX_SIZE][MATRIX_SIZE];
     static int[][] matrix2 = new int[MATRIX_SIZE][MATRIX_SIZE];
 
-
-/**
- * The Multithreader class is a Java class that implements the Runnable interface and performs matrix
- * multiplication in parallel using multiple threads.
- */
-    static class Multithreader implements Runnable
-    {
+    static class Multithreader implements Runnable {
         private int threadId;
 
-        //Constructor
+        // Constructor
         public Multithreader(int threadId)
         {
             this.threadId = threadId;
         }
 
-        //Run method
         public void run() {
-            //Print the current thread
+            // Print thread information for debugging
             System.out.println(Thread.currentThread());
 
-            //Calculate the start and end rows for the current thread
+            // Calculate the start and end rows for the thread
             int startRow = threadId * (MATRIX_SIZE / NUM_THREADS);
             int endRow = (threadId + 1) * (MATRIX_SIZE / NUM_THREADS);
 
-            //Perform matrix multiplication
+            //Multiply the matrices
             for (int i = startRow; i < endRow; i++)
             {
                 for (int j = 0; j < MATRIX_SIZE; j++)
                 {
+                    int sum = 0;
                     for (int k = 0; k < MATRIX_SIZE; k++)
                     {
-                        matrixProd[i][j] += matrix1[i][k] * matrix2[k][j];
+                        sum += matrix1[i][k] * matrix2[k][j];
                     }
+                    matrixProd[i][j] = sum; // Update the result matrix
                 }
             }
         }
     }
 
-
 /**
- * The function initializes a matrix with random values.
+ * The function initializes a given matrix with random integer values.
  *
  * @param matrix The parameter "matrix" is a two-dimensional array of integers.
  */
     public static void initializeMatrix(int[][] matrix) {
-        //Initialize the matrix with random values
         Random random = new Random();
-
-        //Iterate through the matrix and assign random values
         for (int i = 0; i < MATRIX_SIZE; i++)
         {
             for (int j = 0; j < MATRIX_SIZE; j++)
@@ -71,38 +62,39 @@ public class MatrixMultiplier {
     }
 
     public static void main(String[] args) {
-        //Initialize the matrices
+        // Initialize the matrices
         initializeMatrix(matrix1);
         initializeMatrix(matrix2);
 
-        //Print the matrices
+        // Print the matrices for debugging
+        System.out.println("Matrix 1:");
         System.out.println(Arrays.deepToString(matrix1));
+        System.out.println("Matrix 2:");
         System.out.println(Arrays.deepToString(matrix2));
 
-        //Create the threads
+        // Create and start the threads
         Thread[] threads = new Thread[NUM_THREADS];
         for (int i = 0; i < NUM_THREADS; i++)
         {
-            //Create the thread
             threads[i] = new Thread(new Multithreader(i), "Thread - T" + (i + 1));
             threads[i].start();
         }
 
-        //Join the threads
-        try {
+        // Wait for the threads to finish
+        try
+        {
             for (Thread thread : threads)
             {
                 thread.join();
             }
-        } catch (InterruptedException e)
+        }
+        catch (InterruptedException e)
         {
             e.printStackTrace();
         }
 
-        //Print the product matrix
-        System.out.println(Arrays.deepToString(matrixProd));
-
-        //Print the product matrix
+        // Print the result matrix
+        System.out.println("Result Matrix:");
         for (int i = 0; i < MATRIX_SIZE; i++)
         {
             for (int j = 0; j < MATRIX_SIZE; j++)
